@@ -1,0 +1,30 @@
+SELECT distinct(m.supervisor),
+       u.name
+FROM maintenances m,
+     users u
+WHERE (m.status_id = 'NASSG'
+       OR m.status_id = 'PEND')
+  AND m.supervisor = u.user_id
+  AND m.req_date <= to_date('07/21/2014', 'MM/DD/YYYY');
+
+
+SELECT count(maint_id) AS tot_item
+FROM maintenances
+WHERE (status_id = 'NASSG'
+       OR status_id = 'PEND')
+  AND req_date <= to_date('07/14/2014', 'MM/DD/YYYY')
+  AND supervisor = 'ssilguero';
+
+SELECT * FROM maintenances;
+
+SELECT * FROM users;
+
+SELECT * FROM STATUS;
+
+SELECT * FROM ROUTINE_FREQ;
+
+SELECT * FROM ROUTINES_ON_EQUIP;
+
+SELECT * FROM EQUIPMENTS;
+
+SELECT * FROM AREAS;
