@@ -26,17 +26,33 @@ getJSON 'http://jupiter.avagotech.net/apps/qa/maint-dev/toolbox/toolbox.php?acti
 				Si tienes problemas para completar los mantenimientos dirigete con #{supervisor}\n
 				Si tu correo '<%=maint[0].EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a
 				aldo.mendez@avagotech.com para hacer la correccion")({maint:el, name:name})
-			list = ""
-			console.log email
-			server.send {
-				from:'MaintBot <cyopticsmexico@gmail.com>'
-				to:"aldo.mendez@avagotech.com,#{email}"
-				subject:'Mantenimientos'
-				text:Message
-			}, (err, message)->
-				console.log "Error: #{err}" or "Message: #{message}"
+			console.log Message
+			# server.send {
+			# 	from:'MaintBot <cyopticsmexico@gmail.com>'
+			# 	to:"aldo.mendez@avagotech.com,#{email}"
+			# 	subject:'Mantenimientos'
+			# 	text:Message
+			# }, (err, message)->
+			# 	console.log "Error: #{err}" or "Message: #{message}"
 		if name is 'null'
-			console.log  _.groupBy el,'SUPERVISOR'
+			_.map _.groupBy( el,'SUPERVISOR'), (el, name)->
+				email = el[0].SUP_EMAIL
+				Message =_.template("<%= maint[0].SUPERVISOR %>\n\n 
+					Tienes [<%= maint.length%>] mantenimientos pendientes de asignar, 
+					asignalos a la brevedad posible:\n\n
+					<% _.each(maint, function(single) {%><%= single.MAINT_ID %>: <%= single.E_DESC %>\n <% });%>\n\n\n
+					Si tu correo '<%=maint[0].SUP_EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a
+					aldo.mendez@avagotech.com para hacer la correccion")({maint:el, name:name})
+				console.log Message
+				# server.send {
+				# 	from:'MaintBot <cyopticsmexico@gmail.com>'
+				# 	to:"aldo.mendez@avagotech.com,#{email}"
+				# 	subject:'Mantenimientos'
+				# 	text:Message
+				# }, (err, message)->
+				# 	console.log "Error: #{err}" or "Message: #{message}"
+				
+
 
 
 

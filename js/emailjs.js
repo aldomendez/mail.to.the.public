@@ -18,26 +18,25 @@
 
   getJSON('http://jupiter.avagotech.net/apps/qa/maint-dev/toolbox/toolbox.php?action=getAllPending', function(err, res) {
     return _.map(_.groupBy(res, 'MAINT_OPER'), function(el, name) {
-      var Message, email, list;
+      var Message, email, supervisor;
       if (name !== 'null') {
         email = el[0].EMAIL;
-        Message = _.template("<%= name %>\n\n Tienes [<%= maint.length%>] mantenimientos asignados, mismos que tienes que completar durante la semana:\n\n <% _.each(maint, function(single) {%><%= single.MAINT_ID %>: <%= single.E_DESC %>\n <% });%>\n\n\n Si tu correo '<%=maint[0].EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a aldo.mendez@avagotech.com para hacer la correccion")({
+        supervisor = el[0].SUPERVISOR;
+        Message = _.template("<%= name %>\n\n Tienes [<%= maint.length%>] mantenimientos asignados, mismos que tienes que completar durante la semana:\n\n <% _.each(maint, function(single) {%><%= single.MAINT_ID %>: <%= single.E_DESC %>\n <% });%>\n\n\n Si tienes problemas para completar los mantenimientos dirigete con " + supervisor + "\n Si tu correo '<%=maint[0].EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a aldo.mendez@avagotech.com para hacer la correccion")({
           maint: el,
           name: name
         });
-        list = "";
-        console.log(email);
-        server.send({
-          from: 'MaintBot <cyopticsmexico@gmail.com>',
-          to: "aldo.mendez@avagotech.com," + email,
-          subject: 'Mantenimientos',
-          text: Message
-        }, function(err, message) {
-          return console.log(("Error: " + err) || ("Message: " + message));
-        });
+        console.log(Message);
       }
       if (name === 'null') {
-        return console.log(_.groupBy(el, 'SUPERVISOR'));
+        return _.map(_.groupBy(el, 'SUPERVISOR'), function(el, name) {
+          email = el[0].SUP_EMAIL;
+          Message = _.template("<%= maint[0].SUPERVISOR %>\n\n Tienes [<%= maint.length%>] mantenimientos pendientes de asignar, asignalos a la brevedad posible:\n\n <% _.each(maint, function(single) {%><%= single.MAINT_ID %>: <%= single.E_DESC %>\n <% });%>\n\n\n Si tu correo '<%=maint[0].SUP_EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a aldo.mendez@avagotech.com para hacer la correccion")({
+            maint: el,
+            name: name
+          });
+          return console.log(Message);
+        });
       }
     });
   });
