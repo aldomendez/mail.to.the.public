@@ -10,4 +10,4 @@ title Compilador de coffeeScript
 
 cls
 :: Iniciamos el trabajo
-C:\apps\node\node emailjs.js
+C:\apps\node\node C:\apps\NodeMail\js\emailjs.js
