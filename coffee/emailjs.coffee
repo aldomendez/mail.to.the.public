@@ -11,12 +11,17 @@ server = emailjs.server.connect {
 	port:587
 }
 
+unasigned = []
+
 getJSON 'http://jupiter.avagotech.net/apps/qa/maint-dev/toolbox/toolbox.php?action=getAllPending',(err, res)->
 	# Ya que tengo los datos, tengo que filtrar por ASIGNADOS Y NO ASIGNADOS
 	# Despues a los que no esten asignados, les tengo que enviar un correo a los Supervisores, anunciando los mantenimientos que estan pendientes de asignar
 	# Y enviar las notificaciones a los usuarios que tienen mantenimientos pendientes
 	_.map _.groupBy(res, 'MAINT_OPER'), (el, name)->
-		if name isnt 'null'
+		unasigned.push "hello #{name} my email is #{el[0].EMAIL}, supervisor #{el[0].SUPERVISOR}" if !el[0].EMAIL?
+		if name isnt 'null' and el[0].EMAIL?
+			# Esta parte se ejecuta cuando 'name' (el nombre de la persona que tiene asignado el mantenimiento),
+			# no es 'null', o sea que alguien lo tiene asignado.
 			email = el[0].EMAIL
 			supervisor = el[0].SUPERVISOR
 			Message =_.template("<%= name %>\n\n 
@@ -27,15 +32,18 @@ getJSON 'http://jupiter.avagotech.net/apps/qa/maint-dev/toolbox/toolbox.php?acti
 				Si tu correo '<%=maint[0].EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a
 				aldo.mendez@avagotech.com para hacer la correccion")({maint:el, name:name})
 			console.log Message
-			# server.send {
-			# 	from:'MaintBot <cyopticsmexico@gmail.com>'
-			# 	to:"aldo.mendez@avagotech.com,#{email}"
-			# 	subject:'Mantenimientos'
-			# 	text:Message
-			# }, (err, message)->
-			# 	console.log "Error: #{err}" or "Message: #{message}"
+			server.send {
+				from:'MaintBot <cyopticsmexico@gmail.com>'
+				to:"aldo.mendez@avagotech.com,#{email}"
+				subject:'Mantenimientos'
+				text:Message
+			}, (err, message)->
+				# console.log "Error: #{err}" or "Message: #{message}"
 		if name is 'null'
+			# Esta parte se ejecuta cuando name es 'null', o sea que no se le a asignado a nadie
 			_.map _.groupBy( el,'SUPERVISOR'), (el, name)->
+				# Lo agrupo por supervisor para que a cada supervisor le lleguen los mantenimientos que tienen abiertos
+				# y no han asignado.
 				email = el[0].SUP_EMAIL
 				Message =_.template("<%= maint[0].SUPERVISOR %>\n\n 
 					Tienes [<%= maint.length%>] mantenimientos pendientes de asignar, 
@@ -44,13 +52,21 @@ getJSON 'http://jupiter.avagotech.net/apps/qa/maint-dev/toolbox/toolbox.php?acti
 					Si tu correo '<%=maint[0].SUP_EMAIL%>' no corresponde con la cuenta '<%= name %>' envia un correo a
 					aldo.mendez@avagotech.com para hacer la correccion")({maint:el, name:name})
 				console.log Message
-				# server.send {
-				# 	from:'MaintBot <cyopticsmexico@gmail.com>'
-				# 	to:"aldo.mendez@avagotech.com,#{email}"
-				# 	subject:'Mantenimientos'
-				# 	text:Message
-				# }, (err, message)->
-				# 	console.log "Error: #{err}" or "Message: #{message}"
+				server.send {
+					from:'MaintBot <cyopticsmexico@gmail.com>'
+					to:"aldo.mendez@avagotech.com,#{email}"
+					subject:'Mantenimientos'
+					text:Message
+				}, (err, message)->
+					# console.log "Error: #{err}" or "Message: #{message}"
+	# console.log unasigned
+	server.send {
+		from:'MaintBot <cyopticsmexico@gmail.com>'
+		to:"aldo.mendez@avagotech.com"
+		subject:'Mantenimientos: faltantes para capturar'
+		text:"#{JSON.stringify(unasigned)}"
+	}, (err, message)->
+		# console.log "Error: #{err}" or "Message: #{message}"
 				
 
 

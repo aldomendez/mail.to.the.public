@@ -2,7 +2,9 @@
 
 cls
 
-title Compilador de coffeeScript
+title No cierres esta ventana!
+
+echo ""
 :: Creamos una unidad temporal
 :: pushd "%~dp0"
 :: set node = c:\apps\node
@@ -10,4 +12,4 @@ title Compilador de coffeeScript
 
 cls
 :: Iniciamos el trabajo
-C:\apps\node\node C:\apps\NodeMail\js\emailjs.js
+start /min cmd /c "runner.bat"
