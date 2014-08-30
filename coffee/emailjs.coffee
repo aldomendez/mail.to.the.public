@@ -67,19 +67,6 @@ getJSON 'http://jupiter.avagotech.net/apps/qa/maint-dev/toolbox/toolbox.php?acti
 		text:"#{JSON.stringify(unasigned)}"
 	}, (err, message)->
 		# console.log "Error: #{err}" or "Message: #{message}"
-				
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # para enviar el correo solo tengo que ejecutar
