@@ -2,4 +2,4 @@
 cls
 title No cierres esta ventana!
 
-C:\apps\node\node C:\apps\NodeMail\js\toHerrera.js > test.txt.bk.xt
+C:\apps\node\node C:\apps\NodeMail\js\toHerrera.js > mail.to.herrera.debug.b.txt
