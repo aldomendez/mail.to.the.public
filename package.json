@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "emailjs": "^0.3.9",
-    "underscore": "^1.6.0"
+    "underscore": "^1.6.0",
+    "pushover-notifications": "~0.2.2"
   },
   "author": "Aldo Mendez",
   "license": "ISC"
