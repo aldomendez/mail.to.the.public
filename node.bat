@@ -1,1 +1,0 @@
-@c:\apps\node\node.exe %*
